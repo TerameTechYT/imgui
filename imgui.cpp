@@ -15245,6 +15245,15 @@ void ImGui::EndDragDropTarget()
 // Pass text data straight to log (without being displayed)
 static inline void LogTextV(ImGuiContext& g, const char* fmt, va_list args)
 {
+    if (g.LogCallback) 
+    {
+        
+        const char* text_begin, *text_end;
+        ImFormatStringToTempBufferV(&text_begin, &text_end, fmt, args);
+
+        g.LogCallback(&g, g.LogCallbackUserdata, text_begin, text_end - text_begin);
+    }
+
     if (g.LogFile)
     {
         g.LogBuffer.Buf.resize(0);
@@ -15481,6 +15490,20 @@ void ImGui::LogButtons()
         LogToFile();
     if (log_to_clipboard)
         LogToClipboard();
+}
+
+void ImGui::SetLoggerCallback(ImGuiLogCallback callback, void* userdata)
+{
+    ImGuiContext& g = *GImGui;
+    g.LogCallback = callback;
+    g.LogCallbackUserdata = userdata;
+}
+
+IMGUI_API void ImGui::GetLoggerCallback(ImGuiLogCallback* callback, void** userdata)
+{
+    ImGuiContext& g = *GImGui;    
+    callback = &g.LogCallback;
+    userdata = &g.LogCallbackUserdata;
 }
 
 //-----------------------------------------------------------------------------
