@@ -17863,6 +17863,10 @@ void ImGui::DebugLogV(const char* fmt, va_list args)
         ::OutputDebugStringA("[imgui] ");
         ::OutputDebugStringA(str);
     }
+    if (g.LogCallback)
+    {
+        g.LogCallback(&g, g.LogCallbackUserdata, str, g.DebugLogBuf.size() - old_size);
+    }
 #endif
 #ifdef IMGUI_ENABLE_TEST_ENGINE
     // IMGUI_TEST_ENGINE_LOG() adds a trailing \n automatically
